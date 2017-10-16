@@ -1,0 +1,175 @@
+
+
+
+%%%%%%%%%%%%%% SETTINGS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% SET FOLLOWING VARIABLE TO 1 FOR EDIT MODE AND 0 FOR VIEW MODE
+% (erase .bbl and .aux files in this folder every time
+% you switch from one mode to another, otherwise you get
+% an error)
+% One of the features of the edit mode is that it shows citations in
+% boldface if they are not defined in the bibtex file, like the [?] in
+% view mode. Different from the view mode, the edit mode indicates
+% which is the missing reference.
+\def\editmode{1}
+\def\reportmode{1}
+
+% set the following variable to the filenames, separated by commas, of
+% the bibfiles that contain your references.  
+\def\bibfilenames{WISENET}
+
+% Use the following lines if you want to modify how citations are displayed
+%% \let\oldcite\cite
+%% \renewcommand{\cite}[1]{\textbf{\oldcite{#1}}}
+
+
+%%%%%%%%%%%%%% BEGIN: DO NOT TOUCH REGION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\if\reportmode1
+%\documentclass[journal]{IEEEtran}
+%\documentclass[draftclsnofoot,onecolumn,12pt]{IEEEtran}
+\documentclass[10pt,final,onecolumn]{IEEEtran}
+%\documentclass[10pt,final,twocolumn]{IEEEtran}
+%\documentclass[twocolumn,twoside]{IEEEtran}
+\else
+\documentclass[journal]{IEEEtran}
+\fi
+
+\if\editmode1  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %% % Edit mode
+\usepackage[backend=bibtex,style=alphabetic,sorting=debug]{biblatex}
+\DeclareFieldFormat{labelalpha}{\thefield{entrykey}}
+\DeclareFieldFormat{extraalpha}{}
+\bibliography{\bibfilenames}
+\newcommand{\cmt}[1]{\noindent\textcolor{lightgreen}{\underline{[#1]}}} % comment
+\newcommand{\hc}[1]{\textcolor{blue}{#1}} 
+% highlight command --> to
+% know which symbol is
+% defined as a command
+\newenvironment{myitemize}{\begin{itemize}}{\end{itemize}}
+\newcommand{\myitem}{\item}
+\newcommand{\mycite}[1]{\textcolor{darkgreen}{[#1=\cite{#1}]}}
+
+\else
+% View mode
+\usepackage{cite}
+\bibliographystyle{IEEEbib}
+\newcommand{\cmt}[1]{} % comment
+\newcommand{\hc}[1]{\textcolor{black}{#1}} % highlight command -->
+                                % in the edit mode, this command can
+                                % be used to color symbols defined as
+                                % commands 
+\newenvironment{myitemize}{}{}
+\newcommand{\myitem}{}
+\newcommand{\mycite}[1]{\cite{#1}}
+\fi %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%% END: DO NOT TOUCH REGION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\input{mysymbol}
+\input{include}
+\input{mysymbol.sty}
+
+\newcommand{\icomp}{\bar{i}}
+\begin{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Kernel VAR process estimation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\if\reportmode1
+  \author{Author\\[.5cm]\today}
+\else
+\author{Luis M. Lopez-Ramos,~\IEEEmembership{Member,~IEEE,}
+\thanks{The work in this paper was supported by...
+ }
+\thanks{Author One and Author Two  are with the Dept. of ...,
+  University of ..., City, PostalCode
+  Country. E-mails:\{authorone,autortwo\}@university.domain.
+Author Three is with the Dept. of ...,
+  University of ..., City, PostalCode
+  Country. E-mail:author.three@university.domain.}
+\thanks{Parts of this work have been presented in Conference XYZ.}
+}
+\fi
+
+\maketitle
+\begin{abstract}
+Kernel vector autoregressive model and least-square estimation with group-lasso regularization
+\end{abstract}
+
+\if\reportmode0
+\begin{keywords}
+Keyword 1, keyword 2, keyword 3, keyword 4
+\end{keywords}
+\fi
+
+%\section{Introduction}
+\begin{myitemize}
+\item
+\cmt{Modeling}
+The most general nonlinear SVARM form can be written as:
+  \begin{align}
+\label{eq:svar:general}
+	y_{j}[t]=\tilde{f}_j(\bby_{-j}[t], \{\bby[t-\ell]\}_{\ell=1}^L)+e_{j}[t],\quad j=1,\ldots, N
+\end{align}
+where $\bby_{-j}[t]$ denotes all entries of $\bby[t]$ except the $j$-th one, and $\bar{f}_j(.)$ denotes a nonlinear function of its multivariate argument.
+\item \cmt{VAR only} We will assume purely VAR models here:
+\begin{align}
+\label{eq:svar:general}
+	y_{j}[t]=\bar{f}_j(\{\bby[t-\ell]\}_{\ell=1}^L)+e_{j}[t],\quad j=1,\ldots, N
+\end{align}
+\item \cmt{Motivation for additive models}
+The sought $\bar{f}$ functions entail $LN$ variables. The 'curse of dimensionality' for large $L$ and/or $N$ motivates introducing a model with simpler functions.
+While \cite{shen2016nonlinear} proposes a \emph{generative additive model} where each $\bar{f}_j$ function is separable into a sum of $NP$ nonlinear univariate functions, we propose a model where each $\bar{f}_j$ is separable into a sum of $N$ nonlinear $P$-variate functions.
+\item {\cmt{Model}
+Our proposed nonlinear VAR model can be written as:
+\begin{equation}
+    y_{j}[t] = \sum_{i=1}^N f_{ij}(\bby_i[t]) + e_j[t]
+\end{equation}
+where $\bby_i[t] := \left[y_i[t-1], \ldots, y_i[t-P]\right]$, and $f_{ij}$ belongs to the parametric function space defined as
+\begin{equation}
+\label{def:parametric}
+	\mathcal{H}_i:=\{f_{ij}|f_{ij}(\bby)=\sum_{d=1}^{\infty} \beta_{ij}^d{\varphi}^d(\bby); \beta_{ij}^d, \in \mathbb{R}\}.
+\end{equation}
+and $\{\varphi^d\}_{d=1}^\infty$ are nonlinear functions that map vectors in $\mathbb{R}^P$ into a feature space. The space $\mathcal{H}_i$ is equivalent to the RKHS defined as
+\begin{equation}
+\label{def:rkhs}
+	\mathcal{H}_i:=\{f_{ij}|f_{ij}(\bby)=\sum_{\tau=1}^{\infty} \alpha_{ij\tau}\kappa_i(\bby, \bby_i[\tau]); \alpha_{ij\tau}\in \mathbb{R},\bby_i[\tau]\in\mathbb{R}^P  \}.
+\end{equation}
+}
+\item \cmt{Criterion}
+Our estimation criterion aims at enforcing the sparsity of edges. Since in this case each $f_{ij}$ is associated with each edge in the topology graph, the regularizing penalty is the number of edges that have a nonzero function. For a given node $j$:
+\begin{equation}
+    \{f^*_{ij}\}_{i=1}^N := \arg\min_{\{f_{ij} \in \mathcal{H}_i\}} \sum_t \left( y_j[t] - \sum_i f_{ij}(\bby_i[t]) \right)^2 + \lambda \sum_i \mathbb{1}\{\exists \bby: f_{ij}(\bby) \neq 0\}
+\end{equation}
+which equals the function parameterized by
+\begin{equation}
+    \{\beta_i^{d*}\}_{i=1}^N := \arg\min_{\{\beta_i^d\}} \sum_t \left( y_j[t] - \sum_i \sum_d \beta_i^d \varphi^d(\bby_i[t]) \right)^2 + \lambda \sum_i \mathbb{1}\{\| \boldsymbol{\beta}_i \|_2 \neq 0\}
+\end{equation}
+where $\boldsymbol{\beta}_i$ gathers the coefficients $\beta^d$ for $d=1, \ldots, \infty$.
+Proceeding similarly to \cite{zaman2017online}, we get around the nonconvexity of this objective by replacing the indicator with its argument, resulting into its group-lasso surrogate. With $\boldsymbol{\phi}(\cdot)$ being a vector function whose image gathers $\phi^d(\cdot)$ for $d=1, \ldots, \infty$, we arrive at:
+\begin{equation}
+    \{\boldsymbol{\beta}^*_i\}_{i=1}^N := \min_{\{f_{ij} \in \mathcal{H}_i\}} \sum_t \left( y_j[t] - \sum_i \boldsymbol{\beta}_i^\top \boldsymbol\phi(\bby_i[t]) \right)^2 + \lambda \sum_i \| \boldsymbol{\beta}_i \|_2
+\end{equation}
+\item\cmt{Proposition} $\boldsymbol{\beta}_i = \boldsymbol{\Phi}_i\boldsymbol{\alpha}_i$ for some $\alpha_i$.
+\end{myitemize}
+%%%
+
+%
+
+
+
+%%%%%%%%%%%%% DO NOT MODIFY  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\if\editmode1 
+\onecolumn
+\printbibliography
+\else
+\bibliography{\bibfilenames}
+\fi
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
